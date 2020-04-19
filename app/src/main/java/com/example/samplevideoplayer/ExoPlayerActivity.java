@@ -1,19 +1,26 @@
 package com.example.samplevideoplayer;
 
 import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
@@ -28,12 +35,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import static com.example.samplevideoplayer.Utils.getListOfVideos;
 import static com.example.samplevideoplayer.Utils.getListofVideoURL;
 
-public class ExoPlayerActivity extends AppCompatActivity {
+public class ExoPlayerActivity extends AppCompatActivity implements Player.EventListener {
 
     private static final String TAG ="VideoPlayerActivity";
     private SimpleExoPlayerView exoPlayerView;
     private SimpleExoPlayer exoPlayer;
     private String videoURL;
+    private String status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +160,17 @@ public class ExoPlayerActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
+    @SuppressLint("InlinedApi")
+    private void hideSystemUiFullScreen() {
+        exoPlayerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+        | View.SYSTEM_UI_FLAG_FULLSCREEN
+        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+
+
     @Override
     public void onPause() {
         super.onPause();
@@ -176,4 +195,82 @@ public class ExoPlayerActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+    }
+
+    @Override
+    public void onLoadingChanged(boolean isLoading) {
+
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        switch (playbackState) {
+
+            case Player.STATE_BUFFERING:
+                status = PlaybackStatus.LOADING;
+                break;
+            case Player.STATE_ENDED:
+                status = PlaybackStatus.STOPPED;
+                break;
+            case Player.STATE_IDLE:
+                status = PlaybackStatus.IDLE;
+                break;
+            case Player.STATE_READY:
+                status = playWhenReady ? PlaybackStatus.PLAYING : PlaybackStatus.PAUSED;
+                break;
+            default:
+                status = PlaybackStatus.IDLE;
+                break;
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        int currentOrientation = newConfig.orientation;
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            hideSystemUiFullScreen();
+        } else {
+            hideSystemUi();
+        }
+    }
+
+    @Override
+    public void onRepeatModeChanged(int repeatMode) {
+
+    }
+
+    @Override
+    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException error) {
+
+    }
+
+    @Override
+    public void onPositionDiscontinuity(int reason) {
+
+    }
+
+    @Override
+    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+    }
+
+    @Override
+    public void onSeekProcessed() {
+
+    }
 }
