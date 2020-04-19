@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SampleVideoPlayer</string>
+    <string name="video_url">VideoUrl</string>
 </resources>

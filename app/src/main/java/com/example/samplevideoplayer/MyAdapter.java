@@ -12,8 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
+   private static final String TAG ="MyAdapter";
     private String[] mDataset;
-    Context context;
+    private Context context;
     private String[] videoUrls;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -50,9 +51,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("VideoPlayer","ClickListener of the recyclerview" +position);
+                Log.e(TAG,"ClickListener of the recyclerview" +position);
                 Intent mIntent = new Intent(context,ExoPlayerActivity.class);
-                mIntent.putExtra("VideoUrl",videoUrls[position]);
+                mIntent.putExtra(context.getResources().getString(R.string.video_url),videoUrls[position]);
                 mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(mIntent);
             }
@@ -60,7 +61,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.textView.setText(mDataset[position]);
 
     }
-
 
     @Override
     public int getItemCount() {

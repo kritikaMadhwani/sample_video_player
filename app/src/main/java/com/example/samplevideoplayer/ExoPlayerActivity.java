@@ -1,7 +1,6 @@
 package com.example.samplevideoplayer;
 
 import android.annotation.SuppressLint;
-import android.app.AppComponentFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,7 +9,6 @@ import android.view.View;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -30,33 +28,32 @@ import androidx.recyclerview.widget.RecyclerView;
 import static com.example.samplevideoplayer.Utils.getListOfVideos;
 import static com.example.samplevideoplayer.Utils.getListofVideoURL;
 
-public class ExoPlayerActivity extends AppCompatActivity  {
+public class ExoPlayerActivity extends AppCompatActivity {
 
-    SimpleExoPlayerView exoPlayerView;
-    SimpleExoPlayer exoPlayer;
-    String videoURL;
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
+    private static final String TAG ="VideoPlayerActivity";
+    private SimpleExoPlayerView exoPlayerView;
+    private SimpleExoPlayer exoPlayer;
+    private String videoURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_exoplayer);
-        exoPlayerView = (SimpleExoPlayerView) findViewById(R.id.exo_player_view);
 
-     //   initNextButton();
+        exoPlayerView = findViewById(R.id.exo_player_view);
 
-        recyclerView = (RecyclerView) findViewById(R.id.player_recycler_view);
+        //   initNextButton();
+
+        RecyclerView recyclerView = findViewById(R.id.player_recycler_view);
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new MyAdapter(getBaseContext(),getListOfVideos(),getListofVideoURL());
+        RecyclerView.Adapter mAdapter = new MyAdapter(getBaseContext(), getListOfVideos(), getListofVideoURL());
         recyclerView.setAdapter(mAdapter);
 
-        videoURL = getIntent().getStringExtra("VideoUrl");
+        videoURL = getIntent().getStringExtra(getBaseContext().getResources().getString(R.string.video_url));
 
         intializeExoplayer();
 
@@ -84,10 +81,8 @@ public class ExoPlayerActivity extends AppCompatActivity  {
             exoPlayer.setPlayWhenReady(true);
 
 
-
-
-        }catch (Exception e){
-            Log.e("VideoPlayerActivity"," exoplayer error "+ e.toString());
+        } catch (Exception e) {
+            Log.e(TAG, " exoplayer error " + e.toString());
         }
 
     }
@@ -100,30 +95,27 @@ public class ExoPlayerActivity extends AppCompatActivity  {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("VideoActivity","next Button clicked" );
+                Log.d(TAG, "next Button clicked");
             }
         });
-       // nextButton.getViewTreeObserver().addOnGlobalLayoutListener(obtainSetButtonEnabledListener(nextButton));
     }
 
     private MediaSource buildMediaSource(Uri uri) {
-        
+
         String[] videoUrls = Utils.getListofVideoURL();
-        DefaultExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-        DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("user-agent");
 
         ConcatenatingMediaSource concatenatingMediaSource = null;
-        
-        for(int i =0; i<videoUrls.length; i++) {
+
+        for (int i = 0; i < videoUrls.length; i++) {
             // these are reused for both media sources we create below
-          
+
             ExtractorMediaSource videoSource = new ExtractorMediaSource.Factory(
                     new DefaultHttpDataSourceFactory("exoplayer-codelab")).
                     createMediaSource(uri);
             concatenatingMediaSource = new ConcatenatingMediaSource(videoSource);
-            
+
         }
-        
+
         return concatenatingMediaSource;
     }
 
