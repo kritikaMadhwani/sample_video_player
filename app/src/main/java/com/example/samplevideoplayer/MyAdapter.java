@@ -14,6 +14,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private String[] mDataset;
     Context context;
+    private String[] videoUrls;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -27,9 +28,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
     }
 
-    public MyAdapter(Context context,String[] myDataset) {
+    public MyAdapter(Context context,String[] myDataset, String[] videoUrls ) {
         mDataset = myDataset;
-        context = context;
+        this.context = context;
+        this.videoUrls= videoUrls;
+
     }
 
 
@@ -48,6 +51,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             @Override
             public void onClick(View view) {
                 Log.e("VideoPlayer","ClickListener of the recyclerview" +position);
+                Intent mIntent = new Intent(context,ExoPlayerActivity.class);
+                mIntent.putExtra("VideoUrl",videoUrls[position]);
+                mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(mIntent);
             }
         });
         holder.textView.setText(mDataset[position]);
